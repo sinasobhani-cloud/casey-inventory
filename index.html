@@ -1,0 +1,3205 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)https://kaleidoscopic-conkies-d59b86.netlify.app/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Auto Glass - Inventory &amp; POS System</title>
+    <script src="./index_files/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-card h1 {
+            margin-bottom: 10px;
+            color: #1a1a2e;
+            font-size: 28px;
+        }
+
+        .login-card p {
+            margin-bottom: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2196f3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        .login-error {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #2196f3;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #1976d2;
+            box-shadow: 0 2px 4px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-success {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #388e3c;
+        }
+
+        .btn-secondary {
+            background-color: #757575;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #616161;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-email {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .tab-bar {
+            background-color: #fff;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            gap: 0;
+            padding: 0;
+        }
+
+        .tab-button {
+            padding: 16px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-button:hover {
+            color: #2196f3;
+        }
+
+        .tab-button.active {
+            color: #2196f3;
+            border-bottom-color: #2196f3;
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+            background-color: #f5f5f5;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-bar {
+            background-color: white;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2196f3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            border-color: #2196f3;
+            color: #2196f3;
+        }
+
+        .filter-btn.active {
+            background-color: #2196f3;
+            color: white;
+            border-color: #2196f3;
+        }
+
+        .table-container {
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: #f5f5f5;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .row-gp {
+            background-color: #e3f2fd;
+        }
+
+        .row-da {
+            background-color: #e8f5e9;
+        }
+
+        .row-ja {
+            background-color: #fff8e1;
+        }
+
+        .qty-zero {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+            padding: 16px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .detail-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 500px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+
+        .detail-panel.open {
+            transform: translateX(0);
+        }
+
+        .detail-panel-header {
+            background-color: #1a1a2e;
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .detail-panel-header h2 {
+            font-size: 18px;
+        }
+
+        .close-detail {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .detail-content {
+            padding: 20px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .detail-field {
+            margin-bottom: 16px;
+        }
+
+        .detail-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .detail-field input,
+        .detail-field textarea,
+        .detail-field select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .detail-field input:disabled,
+        .detail-field textarea:disabled,
+        .detail-field select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .detail-field textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .view-mode-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .edit-button,
+        .save-button,
+        .cancel-button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .edit-button {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .save-button {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .cancel-button {
+            background-color: #757575;
+            color: white;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+
+        .badge-danger {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .badge-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-warning {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .china-section {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff6600;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .china-section h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ff6600;
+            margin-bottom: 8px;
+        }
+
+        .china-detail {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .add-to-sale-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .add-to-sale-btn:hover {
+            background-color: #388e3c;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background-color: #1a1a2e;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .pos-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            height: calc(100vh - 200px);
+        }
+
+        .pos-panel {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .pos-panel-header {
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .pos-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .pos-search-results {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-result-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px 80px 30px;
+            gap: 8px;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        .cart-item input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .remove-item-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .customer-section {
+            background-color: #f5f5f5;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .customer-search {
+            margin-bottom: 12px;
+        }
+
+        .customer-display {
+            padding: 8px;
+            background-color: white;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .totals-section {
+            background-color: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .total-line label {
+            font-weight: 600;
+        }
+
+        .total-line input {
+            width: 100px;
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .grand-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+            padding-top: 12px;
+            border-top: 2px solid #ddd;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .add-customer-form {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .add-customer-form input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .success-message {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .invoice-details {
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .invoice-field {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .invoice-field-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .date-range-pickers {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .date-range-pickers input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .china-order-item {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .china-order-details {
+            flex: 1;
+        }
+
+        .china-order-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .china-order-price {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .china-order-input {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .china-order-input input {
+            width: 70px;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .china-suggested-row {
+            display: grid;
+            grid-template-columns: 80px 80px 80px 1fr 80px 80px;
+            gap: 8px;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        .print-view {
+            display: none;
+            background-color: white;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .print-view.show {
+            display: block;
+        }
+
+        .print-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .print-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .print-header-address {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .print-invoice-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .print-customer-block {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .print-customer-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .print-customer-text {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .print-table th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 2px solid #333;
+            font-weight: 600;
+        }
+
+        .print-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .print-totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .print-totals-column {
+            width: 200px;
+        }
+
+        .print-total-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .print-total-line.grand {
+            font-size: 14px;
+            font-weight: 700;
+            border-top: 2px solid #333;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .print-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .print-view {
+                display: block;
+                padding: 0;
+                max-width: 100%;
+            }
+            .content, .detail-panel, .modal-overlay {
+                display: none;
+            }
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2196f3;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 1200px) {
+            .pos-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .detail-panel {
+                width: 100%;
+            }
+        }
+
+        /* VIN Decoder */
+        .vin-search-bar { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+        .vin-search-bar input { flex: 1; max-width: 400px; padding: 10px 14px; border: 2px solid #ddd; border-radius: 8px; font-size: 15px; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; }
+        .vin-search-bar input:focus { border-color: #3498db; outline: none; }
+        .vin-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .vin-card { background: #fff; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .vin-card h3 { margin: 0 0 12px; font-size: 14px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px; }
+        .vin-field { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f5f5f5; }
+        .vin-field:last-child { border-bottom: none; }
+        .vin-label { color: #7f8c8d; font-size: 13px; }
+        .vin-value { font-weight: 600; font-size: 13px; color: #2c3e50; text-align: right; max-width: 60%; }
+        .vin-hero { background: linear-gradient(135deg, #2c3e50, #3498db); color: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; text-align: center; }
+        .vin-hero h2 { margin: 0; font-size: 28px; }
+        .vin-hero p { margin: 6px 0 0; opacity: 0.85; font-size: 15px; }
+        .vin-error { background: #fff5f5; border: 1px solid #e74c3c; border-radius: 8px; padding: 16px; color: #c0392b; text-align: center; }
+        .vin-loading { text-align: center; padding: 40px; color: #7f8c8d; font-size: 16px; }
+    
+/* Glass Parts Lookup */
+.glass-lookup-section { margin-top: 24px; padding: 20px; background: #f8f9fa; border-radius: 12px; border: 2px solid #e0e0e0; display: none; }
+.glass-lookup-section.visible { display: block; }
+.glass-lookup-title { font-size: 18px; font-weight: 700; color: #2c3e50; margin-bottom: 16px; }
+.glass-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.glass-type-btn { padding: 14px 10px; border: 2px solid #ddd; border-radius: 10px; background: #fff; cursor: pointer; font-size: 14px; font-weight: 600; text-align: center; transition: all 0.2s; }
+.glass-type-btn:hover { border-color: #3498db; background: #ebf5ff; }
+.glass-type-btn.selected { border-color: #3498db; background: #3498db; color: #fff; }
+.glass-option-selector { margin-bottom: 16px; display: none; }
+.glass-option-selector.visible { display: block; }
+.glass-option-selector select { width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #ddd; font-size: 14px; }
+.glass-lookup-btn { width: 100%; padding: 14px; background: #27ae60; color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
+.glass-lookup-btn:hover { background: #219a52; }
+.glass-lookup-btn:disabled { background: #95a5a6; cursor: not-allowed; }
+.glass-parts-results { display: none; }
+.glass-parts-results.visible { display: block; }
+.part-card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #3498db; }
+.part-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.part-nags { font-size: 18px; font-weight: 700; color: #2c3e50; font-family: monospace; }
+.part-price { font-size: 16px; font-weight: 700; color: #27ae60; }
+.part-desc { color: #555; font-size: 13px; margin-bottom: 10px; }
+.part-features { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.part-feature-badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.part-feature-badge.active { background: #d4edda; color: #155724; }
+.part-feature-badge.inactive { background: #f0f0f0; color: #999; }
+.part-inv-badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+.part-inv-badge.in-stock { background: #d4edda; color: #155724; }
+.part-inv-badge.out-of-stock { background: #fff3cd; color: #856404; }
+.glass-loading { text-align: center; padding: 20px; color: #666; }
+.glass-error { text-align: center; padding: 20px; color: #e74c3c; }
+.glass-empty { text-align: center; padding: 20px; color: #999; font-style: italic; }
+
+/* Download Button */
+.download-btn { padding: 10px 20px; background: #27ae60; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.download-btn:hover { background: #219a52; }
+.download-btn:disabled { background: #95a5a6; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<div id="loginView" class="login-container">
+    <div class="login-card">
+        <h1>Atlas Auto Glass</h1>
+        <p>Inventory &amp; Point of Sale System</p>
+        <div id="loginError" class="login-error hidden"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required="" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required="" placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+    </div>
+</div>
+
+<div id="appView" class="app-container hidden">
+    <div class="header">
+        <h1>Atlas Auto Glass</h1>
+        <div class="header-right">
+            <span class="user-email" id="userEmail"></span>
+            <button class="btn btn-danger btn-sm" id="signOutBtn">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="tab-bar">
+        <button class="tab-button active" data-tab="inventory">Inventory</button>
+        <button class="tab-button" data-tab="pos">Point of Sale</button>
+        <button class="tab-button" data-tab="customers">Customers</button>
+        <button class="tab-button" data-tab="sales">Sales History</button>
+        <button class="tab-button" data-tab="china">China Orders</button>
+        <button class="tab-button" data-tab="vin">VIN Decoder</button>
+    </div>
+
+    <div class="content">
+        <div id="inventory" class="tab-content active">
+            <div class="search-bar">
+                <input type="text" id="inventorySearch" class="search-input" placeholder="Search NAGS part number...">
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="building" data-value="all">All Buildings</button>
+                <button class="filter-btn" data-filter="building" data-value="GP">GP</button>
+                <button class="filter-btn" data-filter="building" data-value="DA">DA</button>
+                <button class="filter-btn" data-filter="building" data-value="JA">JA</button>
+                <span style="width: 1px; background-color: #ddd; margin: 0 8px;"></span>
+                <button class="filter-btn" data-filter="stock" data-value="all">All Stock</button>
+                <button class="filter-btn" data-filter="stock" data-value="out">Out of Stock</button>
+                <button class="filter-btn" data-filter="stock" data-value="low">Low Stock ≤5</button>
+                <button class="filter-btn" data-filter="stock" data-value="variants">Has Variants</button>
+            </div>
+
+            <div class="table-container">
+                <div id="inventoryLoading" class="loading">Loading inventory...</div>
+                <table id="inventoryTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>NAGS</th>
+                            <th>Qty</th>
+                            <th>Wholesale</th>
+                            <th>Retail</th>
+                            <th>Rack</th>
+                            <th>Bin</th>
+                            <th>Building</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <button id="prevPageBtn" class="btn btn-secondary btn-sm">Previous</button>
+                <span class="pagination-info" id="paginationInfo">Page 1 of 1</span>
+                <button id="nextPageBtn" class="btn btn-secondary btn-sm">Next</button>
+            </div>
+        </div>
+
+        <div id="pos" class="tab-content">
+            <div class="pos-container">
+                <div class="pos-panel">
+                    <div class="pos-panel-header">Search Inventory</div>
+                    <div class="pos-panel-content">
+                        <div class="search-bar">
+                            <input type="text" id="posSearch" class="search-input" placeholder="Search NAGS part number...">
+                        </div>
+                        <div id="posSearchResults" class="pos-search-results"></div>
+                    </div>
+                </div>
+
+                <div class="pos-panel">
+                    <div class="pos-panel-header">Sales Cart</div>
+                    <div class="pos-panel-content">
+                        <div class="customer-section">
+                            <div class="customer-search">
+                                <input type="text" id="customerSearch" class="search-input" placeholder="Search customer by name/phone...">
+                            </div>
+                            <div id="customerSearchResults" class="pos-search-results"></div>
+                            <button class="btn btn-secondary btn-sm" id="newCustomerBtn" style="width: 100%; margin-top: 8px;">New Customer</button>
+                            <div id="newCustomerForm" class="add-customer-form hidden" style="margin-top: 12px;">
+                                <input type="text" id="newCustName" placeholder="Name" required="">
+                                <input type="tel" id="newCustPhone" placeholder="Phone" required="">
+                                <input type="email" id="newCustEmail" placeholder="Email">
+                                <input type="text" id="newCustAddress" placeholder="Address">
+                                <input type="text" id="newCustCity" placeholder="City">
+                                <input type="text" id="newCustState" placeholder="State">
+                                <input type="text" id="newCustZip" placeholder="Zip">
+                                <button type="button" class="btn btn-success btn-sm" id="saveNewCustomerBtn">Save Customer</button>
+                            </div>
+                            <div id="selectedCustomer" class="customer-display hidden" style="margin-top: 8px;">
+                                <strong id="selectedCustomerName"></strong><br>
+                                <span id="selectedCustomerPhone"></span>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid #e0e0e0; padding-top: 16px;">
+                            <strong>Items</strong>
+                            <div id="cartItems" style="margin-top: 8px; max-height: 300px; overflow-y: auto;">
+                            </div>
+                        </div>
+
+                        <div class="totals-section">
+                            <div class="total-line">
+                                <label>Subtotal:</label>
+                                <span id="cartSubtotal">$0.00</span>
+                            </div>
+                            <div class="total-line">
+                                <label>Tax Rate:</label>
+                                <input type="number" id="taxRate" value="8.25" min="0" max="100" step="0.01">
+                                <span>%</span>
+                            </div>
+                            <div class="total-line">
+                                <label>Tax:</label>
+                                <span id="cartTax">$0.00</span>
+                            </div>
+                            <div class="grand-total">
+                                <span>Total</span>
+                                <span id="cartTotal">$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn btn-success" id="completeSaleBtn">Complete Sale</button>
+                            <button class="btn btn-secondary" id="clearCartBtn">Clear Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="customers" class="tab-content">
+            <div class="search-bar">
+                <input type="text" id="customerSearchMain" class="search-input" placeholder="Search customers by name or phone...">
+            </div>
+
+            <button class="btn btn-primary" id="addCustomerBtn" style="margin-bottom: 16px;">Add Customer</button>
+
+            <div class="table-container">
+                <div id="customersLoading" class="loading">Loading customers...</div>
+                <table id="customersTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>City</th>
+                            <th>State</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="sales" class="tab-content">
+            <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+                <button class="filter-btn active" data-sales-filter="today">Today</button>
+                <button class="filter-btn" data-sales-filter="week">This Week</button>
+                <button class="filter-btn" data-sales-filter="month">This Month</button>
+                <button class="filter-btn" data-sales-filter="custom">Custom Range</button>
+            
+                <button class="download-btn" onclick="downloadSalesCSV()">Download CSV</button>
+                </div>
+
+            <div id="customRangePickers" class="date-range-pickers hidden">
+                <input type="date" id="salesFromDate">
+                <input type="date" id="salesToDate">
+                <button class="btn btn-primary btn-sm" id="applySalesFilterBtn">Apply</button>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Total Sales</div>
+                    <div class="stat-value" id="totalSalesValue">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Number of Invoices</div>
+                    <div class="stat-value" id="invoiceCountValue">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Average Sale</div>
+                    <div class="stat-value" id="averageSaleValue">$0.00</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div id="salesLoading" class="loading">Loading sales history...</div>
+                <table id="salesTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Invoice #</th>
+                            <th>Part #</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Subtotal</th>
+                            <th>Tax</th>
+                            <th>Total</th>
+                            <th>Sold By</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="china" class="tab-content">
+            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                <button class="filter-btn active" data-china-tab="orders">China Orders</button>
+                <button class="filter-btn" data-china-tab="suggested">Suggested Orders</button>
+            </div>
+
+            <div id="chinaOrdersTab">
+                <div class="search-bar">
+                    <input type="text" id="chinaCatalogSearch" class="search-input" placeholder="Search NAGS or description...">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <h3 style="margin-bottom: 16px;">Available Parts</h3>
+                        <div id="chinaCatalogResults" style="max-height: 600px; overflow-y: auto;"></div>
+                    </div>
+                    <div>
+                        <h3 style="margin-bottom: 16px;">Order Cart</h3>
+                        <div id="chinaOrderItems" style="max-height: 400px; overflow-y: auto; margin-bottom: 16px;"></div>
+                        <div class="totals-section">
+                            <div class="total-line">
+                                <label>Total Pieces:</label>
+                                <span id="chinaTotalPieces">0</span>
+                            </div>
+                            <div class="total-line">
+                                <label>Total Cost:</label>
+                                <span id="chinaTotalCost">$0.00</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-success" id="exportChinaOrderBtn" style="width: 100%;">Export CSV</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chinaSuggestedTab" style="display: none;">
+                <div style="display: flex; gap: 16px; margin-bottom: 16px; align-items: center;">
+                    <label for="stockThreshold">Stock Threshold:</label>
+                    <input type="number" id="stockThreshold" value="2" min="0" max="100" style="width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button class="btn btn-primary btn-sm" id="loadSuggestedBtn">Load Suggestions</button>
+                </div>
+
+                <div class="table-container">
+                    <div id="suggestedLoading" class="loading hidden">Loading suggestions...</div>
+                    <table id="suggestedTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>NAGS</th>
+                                <th>Current Qty</th>
+                                <th>China Price</th>
+                                <th>Description</th>
+                                <th>Pallet Qty</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="suggestedTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <button class="btn btn-success" id="addAllSuggestedBtn" style="margin-top: 16px; display: none;">Add All to Order</button>
+            </div>
+
+</div>
+
+        <div id="vin" class="tab-content">
+            <div class="vin-search-bar">
+                <input type="text" id="vinInput" placeholder="Enter 17-digit VIN..." maxlength="17">
+                <button class="btn btn-primary" onclick="decodeVIN()">Decode VIN</button>
+                <button class="btn" onclick="clearVIN()" style="background:#95a5a6;color:#fff;">Clear</button>
+            </div>
+            <div id="vinResults">
+                <div style="text-align:center;padding:60px 20px;color:#95a5a6;">
+                    <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+            
+                    <h3 style="margin:0 0 8px;color:#7f8c8d;">Enter a VIN to decode</h3>
+                    <p style="margin:0;font-size:14px;">Paste or type a 17-character Vehicle Identification Number above</p>
+                </div>
+            </div>
+<div id="glass-lookup-section" class="glass-lookup-section">
+                <div class="glass-lookup-title">Glass Parts Lookup (AutoGlass CRM)</div>
+                <div class="glass-type-grid">
+                    <button class="glass-type-btn" data-glass="1" data-name="Windshield">Windshield</button>
+                    <button class="glass-type-btn" data-glass="2" data-name="Door">Door Glass</button>
+                    <button class="glass-type-btn" data-glass="8" data-name="Back">Back Glass</button>
+                    <button class="glass-type-btn" data-glass="6" data-name="Quarter">Quarter Glass</button>
+                    <button class="glass-type-btn" data-glass="7" data-name="Vent">Vent Glass</button>
+                    <button class="glass-type-btn" data-glass="3" data-name="Roof">Sunroof</button>
+                </div>
+                <div id="glass-option-selector" class="glass-option-selector">
+                    <select id="glass-option-select">
+                        <option value="">-- Select Position --</option>
+                    </select>
+                </div>
+                <button id="glass-lookup-btn" class="glass-lookup-btn" disabled="">Select a Glass Type Above</button>
+                <div id="glass-parts-results" class="glass-parts-results"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="detailPanel" class="detail-panel">
+    <div class="detail-panel-header">
+        <h2 id="detailTitle">Part Details</h2>
+        <button class="close-detail" id="closeDetailBtn">×</button>
+    </div>
+    <div class="detail-content">
+        <div id="detailLoading" class="loading">Loading...</div>
+        <div id="detailBody" style="display: none;"></div>
+    </div>
+</div>
+
+<div id="modalOverlay" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Modal</h2>
+            <button class="close-detail" id="closeModalBtn">×</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+        </div>
+        <div class="modal-footer" id="modalFooter">
+        </div>
+    </div>
+</div>
+
+<div id="printView" class="print-view"></div>
+
+<script>
+const SUPABASE_URL = 'https://yndbbhabayfkjrifroyy.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InluZGJiaGFiYXlma2pyaWZyb3l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5OTU3MzMsImV4cCI6MjA4ODU3MTczM30.e6wpIKTCk2g_xMmgQhJtNS1xQ0m7w43nDiSN-Ke1Fqw';
+
+const { createClient } = window.supabase;
+var db = null;
+
+let currentUser = null;
+let currentInventoryPage = 0;
+let inventoryPageSize = 50;
+let currentInventoryFilters = { building: 'all', stock: 'all' };
+let currentSelectedInventory = null;
+let currentCart = [];
+let currentCustomer = null;
+let currentSalesFilter = 'today';
+let currentChinaOrder = [];
+
+function initSupabase() {
+    db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+async function checkAuth() {
+    const { data: { session } } = await db.auth.getSession();
+    if (session) {
+        currentUser = session.user;
+        showApp();
+        document.getElementById('userEmail').textContent = currentUser.email;
+        loadInventory();
+        setupRealtimeInventory();
+    } else {
+        showLogin();
+    }
+}
+
+function showLogin() {
+    document.getElementById('loginView').classList.remove('hidden');
+    document.getElementById('appView').classList.add('hidden');
+}
+
+function showApp() {
+    document.getElementById('loginView').classList.add('hidden');
+    document.getElementById('appView').classList.remove('hidden');
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('loginError');
+
+    try {
+        const { error } = await db.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        currentUser = (await db.auth.getSession()).data.session.user;
+        showApp();
+        document.getElementById('userEmail').textContent = currentUser.email;
+        loadInventory();
+        setupRealtimeInventory();
+    } catch (error) {
+        errorDiv.textContent = error.message;
+        errorDiv.classList.remove('hidden');
+    }
+});
+
+document.getElementById('signOutBtn').addEventListener('click', async () => {
+    await db.auth.signOut();
+    currentUser = null;
+    showLogin();
+});
+
+function normalizeNags(input) {
+    const letters = input.replace(/\d/g, '').toUpperCase();
+    const digits = input.replace(/\D/g, '').padStart(5, '0');
+    return letters + digits;
+}
+
+async function loadInventory() {
+    const searchQuery = document.getElementById('inventorySearch').value;
+    const loading = document.getElementById('inventoryLoading');
+    const table = document.getElementById('inventoryTable');
+    const tbody = document.getElementById('inventoryTableBody');
+
+    loading.style.display = 'block';
+    table.style.display = 'none';
+
+    try {
+        let query = db.from('inventory').select('*', { count: 'exact' });
+
+        if (searchQuery) {
+            const normalized = normalizeNags(searchQuery);
+            query = query.or(`nags.ilike.%${normalized}%,nags.ilike.%${searchQuery}%,notes.ilike.%${searchQuery}%`);
+        }
+
+        if (currentInventoryFilters.building !== 'all') {
+            query = query.eq('building', currentInventoryFilters.building);
+        }
+
+        if (currentInventoryFilters.stock === 'out') {
+            query = query.eq('qty', 0);
+        } else if (currentInventoryFilters.stock === 'low') {
+            query = query.lte('qty', 5).gt('qty', 0);
+        }
+
+        const { data: countData, count } = await query;
+
+        let finalQuery = db.from('inventory').select('*').order('nags', { ascending: true });
+
+        if (searchQuery) {
+            const normalized = normalizeNags(searchQuery);
+            finalQuery = finalQuery.or(`nags.ilike.%${normalized}%,nags.ilike.%${searchQuery}%,notes.ilike.%${searchQuery}%`);
+        }
+
+        if (currentInventoryFilters.building !== 'all') {
+            finalQuery = finalQuery.eq('building', currentInventoryFilters.building);
+        }
+
+        if (currentInventoryFilters.stock === 'out') {
+            finalQuery = finalQuery.eq('qty', 0);
+        } else if (currentInventoryFilters.stock === 'low') {
+            finalQuery = finalQuery.lte('qty', 5).gt('qty', 0);
+        }
+
+        const from = currentInventoryPage * inventoryPageSize;
+        const to = from + inventoryPageSize - 1;
+        finalQuery = finalQuery.range(from, to);
+
+        const { data: inventoryData, count: totalCount } = await finalQuery;
+
+        if (currentInventoryFilters.stock === 'variants') {
+            const uniqueBaseKeys = new Set();
+            const filtered = [];
+            for (const item of inventoryData || []) {
+                if (item.base_key && !uniqueBaseKeys.has(item.base_key)) {
+                    const { data: variants } = await db.from('inventory')
+                        .select('id').eq('base_key', item.base_key);
+                    if ((variants || []).length > 1) {
+                        filtered.push(item);
+                        uniqueBaseKeys.add(item.base_key);
+                    }
+                }
+            }
+            tbody.innerHTML = filtered.map(row => {
+                const rowClass = row.building === 'GP' ? 'row-gp' : row.building === 'DA' ? 'row-da' : 'row-ja';
+                const qtyClass = row.qty === 0 ? 'qty-zero' : '';
+                return `
+                    <tr class="${rowClass}" data-id="${row.id}">
+                        <td>${row.nags}</td>
+                        <td class="${qtyClass}">${row.qty}</td>
+                        <td>$${(row.wholesale || 0).toFixed(2)}</td>
+                        <td>$${(row.retail || 0).toFixed(2)}</td>
+                        <td>${row.rack || '-'}</td>
+                        <td>${row.bin || '-'}</td>
+                        <td>${row.building || '-'}</td>
+                        <td>${(row.notes || '').substring(0, 30)}</td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            tbody.innerHTML = (inventoryData || []).map(row => {
+                const rowClass = row.building === 'GP' ? 'row-gp' : row.building === 'DA' ? 'row-da' : 'row-ja';
+                const qtyClass = row.qty === 0 ? 'qty-zero' : '';
+                return `
+                    <tr class="${rowClass}" data-id="${row.id}">
+                        <td>${row.nags}</td>
+                        <td class="${qtyClass}">${row.qty}</td>
+                        <td>$${(row.wholesale || 0).toFixed(2)}</td>
+                        <td>$${(row.retail || 0).toFixed(2)}</td>
+                        <td>${row.rack || '-'}</td>
+                        <td>${row.bin || '-'}</td>
+                        <td>${row.building || '-'}</td>
+                        <td>${(row.notes || '').substring(0, 30)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        const totalPages = Math.ceil((totalCount || 0) / inventoryPageSize);
+        document.getElementById('paginationInfo').textContent = `Page ${currentInventoryPage + 1} of ${totalPages} (${totalCount} results)`;
+        document.getElementById('prevPageBtn').disabled = currentInventoryPage === 0;
+        document.getElementById('nextPageBtn').disabled = currentInventoryPage >= totalPages - 1;
+
+        loading.style.display = 'none';
+        table.style.display = 'table';
+
+        tbody.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => loadInventoryDetail(row.dataset.id));
+        });
+    } catch (error) {
+        console.error('Error loading inventory:', error);
+        loading.textContent = 'Error loading inventory';
+    }
+}
+
+async function loadInventoryDetail(id) {
+    const { data: item } = await db.from('inventory').select('*').eq('id', id).single();
+    currentSelectedInventory = item;
+
+    const detailBody = document.getElementById('detailBody');
+    let html = `
+        <div class="detail-section">
+            <div class="detail-field">
+                <label>NAGS</label>
+                <input type="text" value="${item.nags}" disabled>
+            </div>
+            <div class="detail-field">
+                <label>Notes</label>
+                <textarea id="detailNotes" disabled style="min-height:36px">${item.notes || ''}</textarea>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Inventory</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <div class="detail-field"><label>Quantity</label><input type="number" id="detailQty" value="${item.qty}" disabled></div>
+                <div class="detail-field"><label>Cost</label><input type="number" id="detailCost" value="${item.cost || 0}" disabled step="0.01"></div>
+                <div class="detail-field"><label>Wholesale</label><input type="number" id="detailWholesale" value="${item.wholesale || 0}" disabled step="0.01"></div>
+                <div class="detail-field"><label>Retail</label><input type="number" id="detailRetail" value="${item.retail || 0}" disabled step="0.01"></div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Location</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+                <div class="detail-field"><label>Building</label><select id="detailBuilding" disabled><option value="">Select</option><option value="GP" ${item.building === 'GP' ? 'selected' : ''}>GP</option><option value="DA" ${item.building === 'DA' ? 'selected' : ''}>DA</option><option value="JA" ${item.building === 'JA' ? 'selected' : ''}>JA</option></select></div>
+                <div class="detail-field"><label>Rack</label><input type="text" id="detailRack" value="${item.rack || ''}" disabled></div>
+                <div class="detail-field"><label>Bin</label><input type="text" id="detailBin" value="${item.bin || ''}" disabled></div>
+            </div>
+        </div>
+    `;
+
+    if (item.china_price || item.china_desc) {
+        html += `
+            <div class="china-section">
+                <h4>China Catalog Info</h4>
+                <div class="china-detail"><strong>Price:</strong> $${(item.china_price || 0).toFixed(2)}</div>
+                <div class="china-detail"><strong>Description:</strong> ${item.china_desc || 'N/A'}</div>
+                <div class="china-detail"><strong>Pallet Qty:</strong> ${item.china_pallet || 'N/A'}</div>
+            </div>
+        `;
+    }
+
+    if (item.base_key) {
+        const { data: variants } = await db.from('inventory').select('*').eq('base_key', item.base_key);
+        if ((variants || []).length > 1) {
+            html += `
+                <div class="detail-section">
+                    <h3>Variants</h3>
+                    <table style="width: 100%; font-size: 13px;">
+                        <thead>
+                            <tr>
+                                <th>NAGS</th>
+                                <th>Qty</th>
+                                <th>Rack</th>
+                                <th>Bin</th>
+                                <th>Building</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${(variants || []).map(v => `
+                                <tr data-variant-id="${v.id}"${v.id === item.id ? ' style="background:#e8f0ff"' : ''}>
+                                    <td><span style="font-family:monospace;font-weight:600;font-size:.82rem">${v.nags}</span>${v.id === item.id ? ' <small style="color:#888">← current</small>' : ''}</td>
+                                    <td><input type="number" class="var-edit" data-vid="${v.id}" data-field="qty" value="${v.qty}" disabled style="width:50px;padding:2px 4px;border:1px solid #ddd;border-radius:3px;text-align:center;font-size:.85rem;background:#f9f9f9"></td>
+                                    <td><input type="text" class="var-edit" data-vid="${v.id}" data-field="rack" value="${v.rack || ''}" disabled style="width:50px;padding:2px 4px;border:1px solid #ddd;border-radius:3px;font-size:.85rem;background:#f9f9f9"></td>
+                                    <td><input type="text" class="var-edit" data-vid="${v.id}" data-field="bin" value="${v.bin || ''}" disabled style="width:55px;padding:2px 4px;border:1px solid #ddd;border-radius:3px;font-size:.85rem;background:#f9f9f9"></td>
+                                    <td>${v.building || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+    }
+
+    const prefix = item.prefix || '';
+    const baseNumber = item.part_number || '';
+    if (prefix && baseNumber) {
+        const partCode = prefix + baseNumber;
+        const { data: directInter } = await db.from('interchange')
+            .select('*')
+            .eq('base_prefix', prefix)
+            .eq('base_number', baseNumber);
+        const { data: reverseInter } = await db.from('interchange')
+            .select('*')
+            .contains('related_parts', [partCode]);
+
+        const allInterchange = [...(directInter || []), ...(reverseInter || [])];
+        const interType = allInterchange.length > 0 ? allInterchange[0].interchange_type : '';
+        const allRelatedCodes = new Set();
+        allInterchange.forEach(rec => {
+            allRelatedCodes.add(rec.base_prefix + rec.base_number);
+            (rec.related_parts || []).forEach(p => allRelatedCodes.add(p));
+        });
+        allRelatedCodes.delete(partCode);
+
+        if (allRelatedCodes.size > 0) {
+            const orFilter = [...allRelatedCodes].map(p => `nags.like.${p}%`).join(',');
+            const { data: relatedInventory } = await db.from('inventory')
+                .select('*')
+                .or(orFilter);
+
+            if ((relatedInventory || []).length > 0) {
+                html += `
+                    <div class="detail-section">
+                        <h3>Interchange Parts${interType ? ' (' + interType + ')' : ''}</h3>
+                        <table style="width: 100%; font-size: 13px;">
+                            <thead>
+                                <tr>
+                                    <th>NAGS</th>
+                                    <th>Qty</th>
+                                    <th>Rack</th>
+                                    <th>Bin</th>
+                                    <th>Building</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(relatedInventory || []).map(v => `
+                                    <tr style="cursor:pointer" onclick="loadInventoryDetail(${v.id})">
+                                        <td style="font-family:monospace;font-weight:600;font-size:.82rem">${v.nags}</td>
+                                        <td>${v.qty}</td>
+                                        <td>${v.rack || '-'}</td>
+                                        <td>${v.bin || '-'}</td>
+                                        <td>${v.building || '-'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    html += `
+        <div class="view-mode-buttons">
+            <button class="edit-button" id="editDetailBtn">Edit</button>
+        </div>
+
+        <button class="add-to-sale-btn" id="addToSaleDetailBtn">Add to Sale</button>
+    `;
+
+    detailBody.innerHTML = html;
+    detailBody.style.display = 'block';
+    document.getElementById('detailLoading').style.display = 'none';
+
+    document.getElementById('editDetailBtn').addEventListener('click', enableDetailEdit);
+    document.getElementById('addToSaleDetailBtn').addEventListener('click', () => addToCart(item));
+
+    document.getElementById('detailTitle').textContent = item.nags;
+    document.getElementById('detailPanel').classList.add('open');
+}
+
+function enableDetailEdit() {
+    const fields = ['detailQty', 'detailWholesale', 'detailRetail', 'detailCost', 'detailBuilding', 'detailRack', 'detailBin', 'detailNotes'];
+    fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = false;
+    });
+
+    document.querySelectorAll('.var-edit').forEach(el => {
+        el.disabled = false;
+        el.style.background = '#fff';
+        el.style.borderColor = '#1F3864';
+    });
+
+    const btn = document.querySelector('.edit-button');
+    btn.textContent = 'Save';
+    btn.className = 'save-button';
+    btn.removeEventListener('click', enableDetailEdit);
+    btn.addEventListener('click', saveDetailEdit);
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.className = 'cancel-button';
+    cancelBtn.addEventListener('click', () => {
+        loadInventoryDetail(currentSelectedInventory.id);
+    });
+    document.querySelector('.view-mode-buttons').appendChild(cancelBtn);
+}
+
+async function saveDetailEdit() {
+    const updates = {
+        qty: parseInt(document.getElementById('detailQty').value),
+        wholesale: parseFloat(document.getElementById('detailWholesale').value),
+        retail: parseFloat(document.getElementById('detailRetail').value),
+        cost: parseFloat(document.getElementById('detailCost').value),
+        building: document.getElementById('detailBuilding').value,
+        rack: document.getElementById('detailRack').value,
+        bin: document.getElementById('detailBin').value,
+        notes: document.getElementById('detailNotes').value,
+        updated_at: new Date().toISOString()
+    };
+
+    await db.from('inventory').update(updates).eq('id', currentSelectedInventory.id);
+
+    const variantEdits = {};
+    document.querySelectorAll('.var-edit').forEach(el => {
+        const vid = el.dataset.vid;
+        const field = el.dataset.field;
+        if (!variantEdits[vid]) variantEdits[vid] = {};
+        variantEdits[vid][field] = field === 'qty' ? parseInt(el.value) || 0 : el.value;
+    });
+    for (const [vid, vUpdates] of Object.entries(variantEdits)) {
+        if (vid !== currentSelectedInventory.id.toString()) {
+            vUpdates.updated_at = new Date().toISOString();
+            await db.from('inventory').update(vUpdates).eq('id', vid);
+        }
+    }
+
+    loadInventoryDetail(currentSelectedInventory.id);
+}
+
+document.getElementById('closeDetailBtn').addEventListener('click', () => {
+    document.getElementById('detailPanel').classList.remove('open');
+    document.getElementById('detailLoading').style.display = 'block';
+    document.getElementById('detailBody').style.display = 'none';
+});
+
+document.getElementById('inventorySearch').addEventListener('input', () => {
+    currentInventoryPage = 0;
+    loadInventory();
+});
+
+document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll(`[data-filter="${e.target.dataset.filter}"]`).forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentInventoryFilters[e.target.dataset.filter] = e.target.dataset.value;
+        currentInventoryPage = 0;
+        loadInventory();
+    });
+});
+
+document.getElementById('prevPageBtn').addEventListener('click', () => {
+    if (currentInventoryPage > 0) {
+        currentInventoryPage--;
+        loadInventory();
+    }
+});
+
+document.getElementById('nextPageBtn').addEventListener('click', () => {
+    currentInventoryPage++;
+    loadInventory();
+});
+
+function setupRealtimeInventory() {
+    if (!db) return;
+    db
+        .channel('inventory-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'inventory' }, () => {
+            loadInventory();
+        })
+        .subscribe();
+}
+
+async function loadPOSSearch(query) {
+    const resultsDiv = document.getElementById('posSearchResults');
+    if (!query) {
+        resultsDiv.innerHTML = '';
+        return;
+    }
+
+    const normalized = normalizeNags(query);
+    const { data } = await db.from('inventory')
+        .select('id, nags, qty, retail, building')
+        .or(`nags.ilike.%${normalized}%,nags.ilike.%${query}%`)
+        .limit(20);
+
+    resultsDiv.innerHTML = (data || []).map(item => `
+        <div class="search-result-item" data-id="${item.id}" data-nags="${item.nags}" data-retail="${item.retail}" data-qty="${item.qty}">
+            <div>
+                <strong>${item.nags}</strong><br>
+                <small>${item.building || '-'} | Qty: ${item.qty}</small>
+            </div>
+            <div>$${(item.retail || 0).toFixed(2)}</div>
+        </div>
+    `).join('');
+
+    resultsDiv.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('click', () => addToCart({
+            nags: item.dataset.nags,
+            retail: parseFloat(item.dataset.retail),
+            qty: parseInt(item.dataset.qty)
+        }));
+    });
+}
+
+document.getElementById('posSearch').addEventListener('input', (e) => {
+    loadPOSSearch(e.target.value);
+});
+
+function addToCart(item) {
+    const existing = currentCart.find(i => i.nags === item.nags);
+    if (existing) {
+        existing.cartQty++;
+    } else {
+        currentCart.push({
+            ...item,
+            cartQty: 1,
+            unitPrice: item.retail || 0
+        });
+    }
+    updateCart();
+    const posSearch = document.getElementById('posSearch');
+    if (posSearch) { posSearch.value = ''; loadPOSSearch(''); }
+
+    // Visual feedback on the Add to Sale button
+    const btn = document.getElementById('addToSaleDetailBtn');
+    if (btn) {
+        const orig = btn.textContent;
+        btn.textContent = '\u2713 Added to Cart!';
+        btn.style.background = '#27ae60';
+        setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+    }
+
+    // Update cart badge on POS tab
+    updateCartBadge();
+}
+
+function updateCartBadge() {
+    const totalItems = currentCart.reduce((s, i) => s + i.cartQty, 0);
+    let badge = document.getElementById('posCartBadge');
+    const posTab = document.querySelectorAll('.tab-btn')[1];
+    if (totalItems > 0) {
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.id = 'posCartBadge';
+            badge.style.cssText = 'background:#e74c3c;color:#fff;border-radius:50%;padding:1px 6px;font-size:11px;margin-left:5px;font-weight:700;';
+            if (posTab) posTab.appendChild(badge);
+        }
+        badge.textContent = totalItems;
+    } else if (badge) {
+        badge.remove();
+    }
+}
+
+function updateCart() {
+    const cartDiv = document.getElementById('cartItems');
+    cartDiv.innerHTML = currentCart.map((item, idx) => `
+        <div class="cart-item">
+            <div>${item.nags}</div>
+            <input type="number" min="1" value="${item.cartQty}" data-index="${idx}" class="cart-qty-input">
+            <input type="number" step="0.01" value="${item.unitPrice}" data-index="${idx}" class="cart-price-input">
+            <div>$${(item.cartQty * item.unitPrice).toFixed(2)}</div>
+            <button class="remove-item-btn" data-index="${idx}">×</button>
+        </div>
+    `).join('');
+
+    cartDiv.querySelectorAll('.cart-qty-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+            currentCart[e.target.dataset.index].cartQty = parseInt(e.target.value) || 1;
+            updateCart();
+        });
+    });
+
+    cartDiv.querySelectorAll('.cart-price-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+            currentCart[e.target.dataset.index].unitPrice = parseFloat(e.target.value) || 0;
+            updateCart();
+        });
+    });
+
+    cartDiv.querySelectorAll('.remove-item-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentCart.splice(e.target.dataset.index, 1);
+            updateCart();
+        });
+    });
+
+    const subtotal = currentCart.reduce((sum, item) => sum + (item.cartQty * item.unitPrice), 0);
+    const taxRate = parseFloat(document.getElementById('taxRate').value) / 100;
+    const tax = subtotal * taxRate;
+    const total = subtotal + tax;
+
+    document.getElementById('cartSubtotal').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('cartTax').textContent = '$' + tax.toFixed(2);
+    document.getElementById('cartTotal').textContent = '$' + total.toFixed(2);
+}
+
+document.getElementById('taxRate').addEventListener('change', updateCart);
+
+async function loadCustomerSearch(query) {
+    const resultsDiv = document.getElementById('customerSearchResults');
+    if (!query) {
+        resultsDiv.innerHTML = '';
+        return;
+    }
+
+    const { data } = await db.from('customers')
+        .select('*')
+        .or(`name.ilike.%${query}%,phone.ilike.%${query}%`)
+        .limit(10);
+
+    resultsDiv.innerHTML = (data || []).map(cust => `
+        <div class="search-result-item" data-id="${cust.id}" data-name="${cust.name}" data-phone="${cust.phone}">
+            <div>
+                <strong>${cust.name}</strong><br>
+                <small>${cust.phone}</small>
+            </div>
+        </div>
+    `).join('');
+
+    resultsDiv.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('click', () => selectCustomer({
+            id: item.dataset.id,
+            name: item.dataset.name,
+            phone: item.dataset.phone
+        }));
+    });
+}
+
+document.getElementById('customerSearch').addEventListener('input', (e) => {
+    loadCustomerSearch(e.target.value);
+});
+
+function selectCustomer(customer) {
+    currentCustomer = customer;
+    document.getElementById('customerSearchResults').innerHTML = '';
+    document.getElementById('customerSearch').value = '';
+    document.getElementById('selectedCustomer').classList.remove('hidden');
+    document.getElementById('selectedCustomerName').textContent = customer.name;
+    document.getElementById('selectedCustomerPhone').textContent = customer.phone;
+}
+
+document.getElementById('newCustomerBtn').addEventListener('click', () => {
+    document.getElementById('newCustomerForm').classList.toggle('hidden');
+});
+
+document.getElementById('saveNewCustomerBtn').addEventListener('click', async () => {
+    const newCustomer = {
+        name: document.getElementById('newCustName').value,
+        phone: document.getElementById('newCustPhone').value,
+        email: document.getElementById('newCustEmail').value,
+        address: document.getElementById('newCustAddress').value,
+        city: document.getElementById('newCustCity').value,
+        state: document.getElementById('newCustState').value,
+        zip: document.getElementById('newCustZip').value
+    };
+
+    const { data } = await db.from('customers').insert([newCustomer]).select();
+    if (data && data[0]) {
+        selectCustomer({
+            id: data[0].id,
+            name: data[0].name,
+            phone: data[0].phone
+        });
+        document.getElementById('newCustomerForm').classList.add('hidden');
+        document.getElementById('newCustName').value = '';
+        document.getElementById('newCustPhone').value = '';
+        document.getElementById('newCustEmail').value = '';
+        document.getElementById('newCustAddress').value = '';
+        document.getElementById('newCustCity').value = '';
+        document.getElementById('newCustState').value = '';
+        document.getElementById('newCustZip').value = '';
+    }
+});
+
+document.getElementById('completeSaleBtn').addEventListener('click', async () => {
+    if (!currentCustomer) {
+        alert('Please select a customer');
+        return;
+    }
+    if (currentCart.length === 0) {
+        alert('Cart is empty');
+        return;
+    }
+
+    const subtotal = currentCart.reduce((sum, item) => sum + (item.cartQty * item.unitPrice), 0);
+    const taxRate = parseFloat(document.getElementById('taxRate').value) / 100;
+    const tax = subtotal * taxRate;
+    const total = subtotal + tax;
+
+    const invoiceData = {
+        customer_id: currentCustomer.id,
+        sold_by: currentUser.id,
+        sold_by_name: currentUser.email,
+        subtotal: subtotal,
+        tax_rate: taxRate,
+        tax: tax,
+        total: total,
+        status: 'completed'
+    };
+
+    const { data: invoiceCreated } = await db.from('invoices').insert([invoiceData]).select();
+
+    if (invoiceCreated && invoiceCreated[0]) {
+        const invoiceId = invoiceCreated[0].id;
+
+        const items = currentCart.map(item => ({
+            invoice_id: invoiceId,
+            nags: item.nags,
+            description: '',
+            qty: item.cartQty,
+            unit_price: item.unitPrice,
+            line_total: item.cartQty * item.unitPrice
+        }));
+
+        await db.from('invoice_items').insert(items);
+
+        for (const item of currentCart) {
+            if (item.id) {
+                const { data: inventoryItem } = await db.from('inventory').select('id, qty').eq('id', item.id).single();
+                if (inventoryItem) {
+                    const newQty = Math.max(0, inventoryItem.qty - item.cartQty);
+                    await db.from('inventory').update({ qty: newQty, updated_at: new Date().toISOString() }).eq('id', item.id);
+                }
+            } else {
+                const { data: inventoryItems } = await db.from('inventory').select('id, qty').ilike('nags', item.nags).limit(1);
+                if (inventoryItems && inventoryItems[0]) {
+                    const inv = inventoryItems[0];
+                    const newQty = Math.max(0, inv.qty - item.cartQty);
+                    await db.from('inventory').update({ qty: newQty, updated_at: new Date().toISOString() }).eq('id', inv.id);
+                }
+            }
+        }
+
+        const invoiceNum = invoiceCreated[0].invoice_number;
+        alert(`Sale completed! Invoice: ${invoiceNum}`);
+
+        currentCart = [];
+        currentCustomer = null;
+        updateCart();
+        document.getElementById('selectedCustomer').classList.add('hidden');
+        document.getElementById('customerSearch').value = '';
+        document.getElementById('customerSearchResults').innerHTML = '';
+
+        loadInventory();
+        loadSalesHistory();
+    }
+});
+
+document.getElementById('clearCartBtn').addEventListener('click', () => {
+    currentCart = [];
+    updateCart();
+});
+
+async function loadCustomers() {
+    const loading = document.getElementById('customersLoading');
+    const table = document.getElementById('customersTable');
+    const tbody = document.getElementById('customersTableBody');
+
+    loading.style.display = 'block';
+    table.style.display = 'none';
+
+    const searchQuery = document.getElementById('customerSearchMain').value;
+
+    try {
+        let query = db.from('customers').select('*');
+
+        if (searchQuery) {
+            query = query.or(`name.ilike.%${searchQuery}%,phone.ilike.%${searchQuery}%`);
+        }
+
+        const { data } = await query.order('name');
+
+        tbody.innerHTML = (data || []).map(cust => `
+            <tr data-id="${cust.id}">
+                <td>${cust.name}</td>
+                <td>${cust.phone || '-'}</td>
+                <td>${cust.email || '-'}</td>
+                <td>${cust.city || '-'}</td>
+                <td>${cust.state || '-'}</td>
+            </tr>
+        `).join('');
+
+        tbody.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => loadCustomerDetail(row.dataset.id));
+        });
+
+        loading.style.display = 'none';
+        table.style.display = 'table';
+    } catch (error) {
+        console.error('Error loading customers:', error);
+        loading.textContent = 'Error loading customers';
+    }
+}
+
+async function loadCustomerDetail(id) {
+    const { data: cust } = await db.from('customers').select('*').eq('id', id).single();
+
+    const detailBody = document.getElementById('detailBody');
+    let html = `
+        <div class="detail-section">
+            <h3>Contact Information</h3>
+            <div class="detail-field">
+                <label>Name</label>
+                <input type="text" id="custName" value="${cust.name}" disabled>
+            </div>
+            <div class="detail-field">
+                <label>Phone</label>
+                <input type="tel" id="custPhone" value="${cust.phone || ''}" disabled>
+            </div>
+            <div class="detail-field">
+                <label>Email</label>
+                <input type="email" id="custEmail" value="${cust.email || ''}" disabled>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Address</h3>
+            <div class="detail-field">
+                <label>Street Address</label>
+                <input type="text" id="custAddress" value="${cust.address || ''}" disabled>
+            </div>
+            <div class="detail-field">
+                <label>City</label>
+                <input type="text" id="custCity" value="${cust.city || ''}" disabled>
+            </div>
+            <div class="detail-field">
+                <label>State</label>
+                <input type="text" id="custState" value="${cust.state || ''}" disabled>
+            </div>
+            <div class="detail-field">
+                <label>Zip</label>
+                <input type="text" id="custZip" value="${cust.zip || ''}" disabled>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Notes</h3>
+            <div class="detail-field">
+                <textarea id="custNotes" disabled>${cust.notes || ''}</textarea>
+            </div>
+        </div>
+
+        <div class="view-mode-buttons">
+            <button class="edit-button" id="editCustBtn">Edit</button>
+        </div>
+    `;
+
+    const { data: invoices } = await db.from('invoices').select('*').eq('customer_id', id).order('created_at', { ascending: false });
+
+    if (invoices && invoices.length > 0) {
+        html += `
+            <div class="detail-section">
+                <h3>Purchase History</h3>
+                <table style="width: 100%; font-size: 13px;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Invoice #</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${invoices.map(inv => `
+                            <tr style="cursor: pointer;" data-invoice-id="${inv.id}">
+                                <td>${new Date(inv.created_at).toLocaleDateString()}</td>
+                                <td>${inv.invoice_number}</td>
+                                <td>$${(inv.total || 0).toFixed(2)}</td>
+                                <td>${inv.status}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    detailBody.innerHTML = html;
+    detailBody.style.display = 'block';
+    document.getElementById('detailLoading').style.display = 'none';
+
+    document.getElementById('editCustBtn').addEventListener('click', enableCustEdit);
+
+    detailBody.querySelectorAll('[data-invoice-id]').forEach(row => {
+        row.addEventListener('click', () => loadInvoiceDetail(row.dataset.invoiceId));
+    });
+
+    document.getElementById('detailTitle').textContent = cust.name;
+    document.getElementById('detailPanel').classList.add('open');
+}
+
+function enableCustEdit() {
+    const fields = ['custName', 'custPhone', 'custEmail', 'custAddress', 'custCity', 'custState', 'custZip', 'custNotes'];
+    fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = false;
+    });
+
+    const btn = document.querySelector('.edit-button');
+    btn.textContent = 'Save';
+    btn.className = 'save-button';
+    btn.removeEventListener('click', enableCustEdit);
+    btn.addEventListener('click', saveCustEdit);
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.className = 'cancel-button';
+    cancelBtn.addEventListener('click', () => {
+        loadCustomers();
+        document.getElementById('detailPanel').classList.remove('open');
+    });
+    document.querySelector('.view-mode-buttons').appendChild(cancelBtn);
+}
+
+async function saveCustEdit() {
+    const updates = {
+        name: document.getElementById('custName').value,
+        phone: document.getElementById('custPhone').value,
+        email: document.getElementById('custEmail').value,
+        address: document.getElementById('custAddress').value,
+        city: document.getElementById('custCity').value,
+        state: document.getElementById('custState').value,
+        zip: document.getElementById('custZip').value,
+        notes: document.getElementById('custNotes').value,
+        updated_at: new Date().toISOString()
+    };
+
+    const custId = document.getElementById('detailPanel').dataset.custId ||
+                   (await db.from('customers').select('id').eq('name', document.getElementById('custName').value).single()).data.id;
+
+    await db.from('customers').update(updates).eq('id', custId);
+    loadCustomers();
+}
+
+document.getElementById('customerSearchMain').addEventListener('input', () => {
+    loadCustomers();
+});
+
+document.getElementById('addCustomerBtn').addEventListener('click', async () => {
+    const newCustName = prompt('Customer Name:');
+    if (!newCustName) return;
+    const newCustPhone = prompt('Phone:');
+    const newCustEmail = prompt('Email:');
+
+    const { data } = await db.from('customers').insert([{
+        name: newCustName,
+        phone: newCustPhone,
+        email: newCustEmail
+    }]).select();
+
+    if (data && data[0]) {
+        loadCustomers();
+    }
+});
+
+async function loadSalesHistory() {
+    const loading = document.getElementById('salesLoading');
+    const table = document.getElementById('salesTable');
+    const tbody = document.getElementById('salesTableBody');
+
+    loading.style.display = 'block';
+    table.style.display = 'none';
+
+    try {
+        let query = db.from('sales_summary').select('*');
+
+        if (currentSalesFilter === 'today') {
+            const today = new Date().toISOString().split('T')[0];
+            query = query.gte('created_at', today);
+        } else if (currentSalesFilter === 'week') {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            query = query.gte('created_at', weekAgo.toISOString().split('T')[0]);
+        } else if (currentSalesFilter === 'month') {
+            const monthAgo = new Date();
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            query = query.gte('created_at', monthAgo.toISOString().split('T')[0]);
+        } else if (currentSalesFilter === 'custom') {
+            const fromDate = document.getElementById('salesFromDate').value;
+            const toDate = document.getElementById('salesToDate').value;
+            if (fromDate) query = query.gte('created_at', fromDate);
+            if (toDate) query = query.lte('created_at', toDate);
+        }
+
+        const { data } = await query.order('created_at', { ascending: false });
+            // Fetch part numbers from invoice_items
+            const invoiceIds = (data || []).map(d => d.id);
+            let partNumberMap = {};
+            if (invoiceIds.length > 0) {
+                const { data: items } = await db.from('invoice_items').select('invoice_id, nags').in('invoice_id', invoiceIds);
+                if (items) {
+                    items.forEach(item => {
+                        if (!partNumberMap[item.invoice_id]) partNumberMap[item.invoice_id] = [];
+                        if (item.nags) partNumberMap[item.invoice_id].push(item.nags);
+                    });
+                }
+            }
+            // Attach part numbers to each invoice
+            if (data) data.forEach(inv => {
+                inv.part_numbers = (partNumberMap[inv.id] || []).join(', ');
+            });
+
+        tbody.innerHTML = (data || []).map(invoice => `
+            <tr data-id="${invoice.id}">
+                <td>${new Date(invoice.created_at).toLocaleDateString()}</td>
+                <td>${invoice.invoice_number}</td>
+                        <td>${invoice.part_numbers || "-"}</td>
+                <td>${invoice.customer_name}</td>
+                <td>${invoice.item_count || 0}</td>
+                <td>$${(invoice.subtotal || 0).toFixed(2)}</td>
+                <td>$${(invoice.tax || 0).toFixed(2)}</td>
+                <td>$${(invoice.total || 0).toFixed(2)}</td>
+                <td>${invoice.sold_by_name}</td>
+                <td>${invoice.status}</td>
+            </tr>
+        `).join('');
+
+        tbody.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => loadInvoiceDetail(row.dataset.id));
+        });
+
+        const totalSales = (data || []).reduce((sum, inv) => sum + (inv.total || 0), 0);
+        const avgSale = data && data.length > 0 ? totalSales / data.length : 0;
+
+        document.getElementById('totalSalesValue').textContent = '$' + totalSales.toFixed(2);
+        document.getElementById('invoiceCountValue').textContent = (data || []).length;
+        document.getElementById('averageSaleValue').textContent = '$' + avgSale.toFixed(2);
+
+        loading.style.display = 'none';
+        table.style.display = 'table';
+    } catch (error) {
+        console.error('Error loading sales:', error);
+        loading.textContent = 'Error loading sales';
+    }
+}
+
+async function loadInvoiceDetail(invoiceId) {
+    const { data: invoice } = await db.from('invoices').select('*').eq('id', invoiceId).single();
+    const { data: items } = await db.from('invoice_items').select('*').eq('invoice_id', invoiceId);
+    const { data: customer } = await db.from('customers').select('*').eq('id', invoice.customer_id).single();
+
+    let html = `
+        <div class="detail-section">
+            <h3>Invoice Information</h3>
+            <div class="invoice-details">
+                <div class="invoice-field">
+                    <span class="invoice-field-label">Invoice Number:</span>
+                    <span>${invoice.invoice_number}</span>
+                </div>
+                <div class="invoice-field">
+                    <span class="invoice-field-label">Date:</span>
+                    <span>${new Date(invoice.created_at).toLocaleDateString()}</span>
+                </div>
+                <div class="invoice-field">
+                    <span class="invoice-field-label">Sold By:</span>
+                    <span>${invoice.sold_by_name}</span>
+                </div>
+                <div class="invoice-field">
+                    <span class="invoice-field-label">Status:</span>
+                    <span>${invoice.status}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Customer Information</h3>
+            <div class="invoice-details">
+                <div class="invoice-field">
+                    <span class="invoice-field-label">Name:</span>
+                    <span>${customer.name}</span>
+                </div>
+                <div class="invoice-field">
+                    <span class="invoice-field-label">Phone:</span>
+                    <span>${customer.phone || '-'}</span>
+                </div>
+                <div class="invoice-field">
+                    <span class="invoice-field-label">Email:</span>
+                    <span>${customer.email || '-'}</span>
+                </div>
+                ${customer.address ? `<div class="invoice-field">
+                    <span class="invoice-field-label">Address:</span>
+                    <span>${customer.address}, ${customer.city}, ${customer.state} ${customer.zip}</span>
+                </div>` : ''}
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Line Items</h3>
+            <table style="width: 100%; font-size: 13px;">
+                <thead>
+                    <tr>
+                        <th>NAGS</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${(items || []).map(item => `
+                        <tr>
+                            <td>${item.nags}</td>
+                            <td>${item.qty}</td>
+                            <td>$${(item.unit_price || 0).toFixed(2)}</td>
+                            <td>$${(item.line_total || 0).toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="detail-section">
+            <h3>Totals</h3>
+            <div class="invoice-details">
+                <div class="invoice-field">
+                    <span class="invoice-field-label">Subtotal:</span>
+                    <span>$${(invoice.subtotal || 0).toFixed(2)}</span>
+                </div>
+                <div class="invoice-field">
+                    <span class="invoice-field-label">Tax:</span>
+                    <span>$${(invoice.tax || 0).toFixed(2)}</span>
+                </div>
+                <div class="invoice-field" style="border-top: 2px solid #ddd; padding-top: 12px; margin-top: 12px; font-weight: 700; font-size: 16px;">
+                    <span class="invoice-field-label">Total:</span>
+                    <span>$${(invoice.total || 0).toFixed(2)}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="view-mode-buttons">
+            <button class="btn btn-primary btn-sm" id="printInvoiceBtn">Print</button>
+            ${invoice.status !== 'void' ? `<button class="btn btn-danger btn-sm" id="voidInvoiceBtn">Void</button>` : ''}
+        </div>
+    `;
+
+    const detailBody = document.getElementById('detailBody');
+    detailBody.innerHTML = html;
+    detailBody.style.display = 'block';
+    document.getElementById('detailLoading').style.display = 'none';
+
+    document.getElementById('printInvoiceBtn').addEventListener('click', () => printInvoice(invoice, items, customer));
+    if (document.getElementById('voidInvoiceBtn')) {
+        document.getElementById('voidInvoiceBtn').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to void this invoice?')) {
+                await db.from('invoices').update({ status: 'void' }).eq('id', invoiceId);
+                loadSalesHistory();
+                document.getElementById('detailPanel').classList.remove('open');
+            }
+        });
+    }
+
+    document.getElementById('detailTitle').textContent = invoice.invoice_number;
+    document.getElementById('detailPanel').classList.add('open');
+}
+
+function printInvoice(invoice, items, customer) {
+    const printView = document.getElementById('printView');
+    let html = `
+        <div class="print-header">
+            <h1>Atlas Auto Glass</h1>
+            <div class="print-header-address">
+                Invoice for Service
+            </div>
+        </div>
+
+        <div class="print-invoice-info">
+            <div>
+                <strong>Invoice #:</strong> ${invoice.invoice_number}<br>
+                <strong>Date:</strong> ${new Date(invoice.created_at).toLocaleDateString()}<br>
+                <strong>Sold By:</strong> ${invoice.sold_by_name}
+            </div>
+        </div>
+
+        <div class="print-customer-block">
+            <div class="print-customer-title">Bill To:</div>
+            <div class="print-customer-text"><strong>${customer.name}</strong></div>
+            ${customer.address ? `<div class="print-customer-text">${customer.address}</div>` : ''}
+            ${customer.city || customer.state || customer.zip ? `<div class="print-customer-text">${customer.city || ''} ${customer.state || ''} ${customer.zip || ''}</div>` : ''}
+            ${customer.phone ? `<div class="print-customer-text">Phone: ${customer.phone}</div>` : ''}
+        </div>
+
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>NAGS</th>
+                    <th>Description</th>
+                    <th style="text-align: right;">Qty</th>
+                    <th style="text-align: right;">Unit Price</th>
+                    <th style="text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${(items || []).map((item, idx) => `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${item.nags}</td>
+                        <td>${item.description || '-'}</td>
+                        <td style="text-align: right;">${item.qty}</td>
+                        <td style="text-align: right;">$${(item.unit_price || 0).toFixed(2)}</td>
+                        <td style="text-align: right;">$${(item.line_total || 0).toFixed(2)}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+
+        <div class="print-totals">
+            <div class="print-totals-column">
+                <div class="print-total-line">
+                    <span>Subtotal:</span>
+                    <span>$${(invoice.subtotal || 0).toFixed(2)}</span>
+                </div>
+                <div class="print-total-line">
+                    <span>Tax (${((invoice.tax_rate || 0) * 100).toFixed(2)}%):</span>
+                    <span>$${(invoice.tax || 0).toFixed(2)}</span>
+                </div>
+                <div class="print-total-line grand">
+                    <span>Total:</span>
+                    <span>$${(invoice.total || 0).toFixed(2)}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="print-footer">
+            Thank you for your business!
+        </div>
+    `;
+
+    printView.innerHTML = html;
+    printView.classList.add('show');
+    setTimeout(() => window.print(), 100);
+    setTimeout(() => {
+        printView.classList.remove('show');
+        printView.innerHTML = '';
+    }, 500);
+}
+
+document.querySelectorAll('[data-sales-filter]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('[data-sales-filter]').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentSalesFilter = e.target.dataset.salesFilter;
+
+        if (currentSalesFilter === 'custom') {
+            document.getElementById('customRangePickers').classList.remove('hidden');
+        } else {
+            document.getElementById('customRangePickers').classList.add('hidden');
+            loadSalesHistory();
+        }
+    });
+});
+
+document.getElementById('applySalesFilterBtn').addEventListener('click', loadSalesHistory);
+
+async function loadChinaCatalog(query) {
+    const resultsDiv = document.getElementById('chinaCatalogResults');
+
+    try {
+        let q = db.from('china_catalog').select('*');
+
+        if (query) {
+            const normalized = normalizeNags(query);
+            q = q.or(`nags.ilike.%${normalized}%,nags.ilike.%${query}%,description.ilike.%${query}%`);
+        }
+
+        const { data } = await q.limit(50);
+
+        resultsDiv.innerHTML = (data || []).map(item => `
+            <div class="china-order-item">
+                <div class="china-order-details">
+                    <div class="china-order-title">${item.nags}</div>
+                    <div class="china-order-price">$${(item.price || 0).toFixed(2)} - ${item.description}</div>
+                    <small>Pallet: ${item.pallet_qty} units</small>
+                </div>
+                <div class="china-order-input">
+                    <input type="number" min="0" value="0" placeholder="Qty" class="china-qty-input" data-nags="${item.nags}" data-price="${item.price}" data-description="${item.description}" data-pallet="${item.pallet_qty}">
+                </div>
+            </div>
+        `).join('');
+
+        resultsDiv.querySelectorAll('.china-qty-input').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const qty = parseInt(e.target.value) || 0;
+                if (qty > 0) {
+                    addToChinaOrder({
+                        nags: e.target.dataset.nags,
+                        price: parseFloat(e.target.dataset.price),
+                        description: e.target.dataset.description,
+                        pallet_qty: parseInt(e.target.dataset.pallet),
+                        qty: qty
+                    });
+                    e.target.value = '0';
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Error loading china catalog:', error);
+    }
+}
+
+document.getElementById('chinaCatalogSearch').addEventListener('input', (e) => {
+    loadChinaCatalog(e.target.value);
+});
+
+function addToChinaOrder(item) {
+    const existing = currentChinaOrder.find(i => i.nags === item.nags);
+    if (existing) {
+        existing.qty += item.qty;
+    } else {
+        currentChinaOrder.push({ ...item });
+    }
+    updateChinaOrder();
+}
+
+function updateChinaOrder() {
+    const orderDiv = document.getElementById('chinaOrderItems');
+    orderDiv.innerHTML = currentChinaOrder.map((item, idx) => `
+        <div class="china-order-item">
+            <div class="china-order-details">
+                <div class="china-order-title">${item.nags}</div>
+                <div class="china-order-price">$${(item.price || 0).toFixed(2)}</div>
+            </div>
+            <div class="china-order-input">
+                <input type="number" min="1" value="${item.qty}" data-index="${idx}" class="china-cart-qty">
+                <button class="remove-item-btn" data-index="${idx}">×</button>
+            </div>
+        </div>
+    `).join('');
+
+    orderDiv.querySelectorAll('.china-cart-qty').forEach(input => {
+        input.addEventListener('change', (e) => {
+            currentChinaOrder[e.target.dataset.index].qty = parseInt(e.target.value) || 1;
+            updateChinaOrder();
+        });
+    });
+
+    orderDiv.querySelectorAll('.remove-item-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentChinaOrder.splice(e.target.dataset.index, 1);
+            updateChinaOrder();
+        });
+    });
+
+    const totalPieces = currentChinaOrder.reduce((sum, item) => sum + item.qty, 0);
+    const totalCost = currentChinaOrder.reduce((sum, item) => sum + (item.qty * item.price), 0);
+
+    document.getElementById('chinaTotalPieces').textContent = totalPieces;
+    document.getElementById('chinaTotalCost').textContent = '$' + totalCost.toFixed(2);
+}
+
+document.getElementById('exportChinaOrderBtn').addEventListener('click', () => {
+    let csv = 'NAGS,Description,Price,Qty,Total\n';
+    csv += currentChinaOrder.map(item =>
+        `${item.nags},"${item.description}",${item.price},${item.qty},${(item.qty * item.price).toFixed(2)}`
+    ).join('\n');
+
+    const link = document.createElement('a');
+    link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    link.download = 'china-order-' + new Date().toISOString().split('T')[0] + '.csv';
+    link.click();
+});
+
+document.querySelectorAll('[data-china-tab]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('[data-china-tab]').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+
+        if (e.target.dataset.chinaTab === 'orders') {
+            document.getElementById('chinaOrdersTab').style.display = 'block';
+            document.getElementById('chinaSuggestedTab').style.display = 'none';
+        } else {
+            document.getElementById('chinaOrdersTab').style.display = 'none';
+            document.getElementById('chinaSuggestedTab').style.display = 'block';
+        }
+    });
+});
+
+document.getElementById('loadSuggestedBtn').addEventListener('click', async () => {
+    const threshold = parseInt(document.getElementById('stockThreshold').value) || 2;
+    const loading = document.getElementById('suggestedLoading');
+    const table = document.getElementById('suggestedTable');
+    const tbody = document.getElementById('suggestedTableBody');
+
+    loading.style.display = 'block';
+    table.style.display = 'none';
+
+    try {
+        const { data: lowStockItems } = await db.from('inventory')
+            .select('nags, qty')
+            .lt('qty', threshold);
+
+        if (!lowStockItems || lowStockItems.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No low stock items found</td></tr>';
+            loading.style.display = 'none';
+            table.style.display = 'table';
+            document.getElementById('addAllSuggestedBtn').style.display = 'none';
+            return;
+        }
+
+        const nagsValues = lowStockItems.map(item => item.nags);
+        const { data: chinaItems } = await db.from('china_catalog')
+            .select('*')
+            .in('nags', nagsValues);
+
+        const inventoryMap = new Map(lowStockItems.map(item => [item.nags, item.qty]));
+
+        tbody.innerHTML = (chinaItems || []).map(item => `
+            <tr>
+                <td>${item.nags}</td>
+                <td>${inventoryMap.get(item.nags) || 0}</td>
+                <td>$${(item.price || 0).toFixed(2)}</td>
+                <td>${item.description}</td>
+                <td>${item.pallet_qty}</td>
+                <td>
+                    <button class="btn btn-success btn-sm suggested-add-btn" data-nags="${item.nags}" data-price="${item.price}" data-description="${item.description}" data-pallet="${item.pallet_qty}">Add</button>
+                </td>
+            </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.suggested-add-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                addToChinaOrder({
+                    nags: e.target.dataset.nags,
+                    price: parseFloat(e.target.dataset.price),
+                    description: e.target.dataset.description,
+                    pallet_qty: parseInt(e.target.dataset.pallet),
+                    qty: parseInt(e.target.dataset.pallet)
+                });
+            });
+        });
+
+        loading.style.display = 'none';
+        table.style.display = 'table';
+        document.getElementById('addAllSuggestedBtn').style.display = 'block';
+    } catch (error) {
+        console.error('Error loading suggestions:', error);
+        loading.textContent = 'Error loading suggestions';
+    }
+});
+
+document.getElementById('addAllSuggestedBtn').addEventListener('click', () => {
+    const rows = document.getElementById('suggestedTableBody').querySelectorAll('tr');
+    rows.forEach(row => {
+        const btn = row.querySelector('.suggested-add-btn');
+        if (btn) {
+            addToChinaOrder({
+                nags: btn.dataset.nags,
+                price: parseFloat(btn.dataset.price),
+                description: btn.dataset.description,
+                pallet_qty: parseInt(btn.dataset.pallet),
+                qty: parseInt(btn.dataset.pallet)
+            });
+        }
+    });
+});
+
+document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        e.target.classList.add('active');
+        const tabName = e.target.dataset.tab;
+        document.getElementById(tabName).classList.add('active');
+
+        if (tabName === 'customers') loadCustomers();
+        if (tabName === 'sales') loadSalesHistory();
+    });
+});
+
+document.getElementById('closeModalBtn').addEventListener('click', () => {
+    document.getElementById('modalOverlay').classList.remove('show');
+});
+
+document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'modalOverlay') {
+        document.getElementById('modalOverlay').classList.remove('show');
+    }
+});
+
+
+// VIN Decoder
+async function decodeVIN() {
+    const vinInput = document.getElementById('vinInput');
+    const vin = vinInput.value.trim().toUpperCase();
+    const resultsDiv = document.getElementById('vinResults');
+
+    if (!vin) { resultsDiv.innerHTML = '<div class="vin-error">Please enter a VIN number.</div>'; return; }
+    if (vin.length !== 17) { resultsDiv.innerHTML = '<div class="vin-error">VIN must be exactly 17 characters. You entered ' + vin.length + '.</div>'; return; }
+    if (/[IOQ]/i.test(vin)) { resultsDiv.innerHTML = '<div class="vin-error">VIN cannot contain letters I, O, or Q.</div>'; return; }
+
+    resultsDiv.innerHTML = '<div class="vin-loading">Decoding VIN...</div>';
+
+    try {
+        const resp = await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/' + vin + '?format=json');
+        if (!resp.ok) throw new Error('API request failed');
+        const data = await resp.json();
+        const r = data.Results || [];
+
+        const get = (varName) => {
+            const item = r.find(v => v.Variable === varName);
+            return (item && item.Value && item.Value.trim() && item.Value !== 'Not Applicable') ? item.Value.trim() : '';
+        };
+
+        const year = get('Model Year');
+        const make = get('Make');
+        const model = get('Model');
+        const trim = get('Trim');
+
+        if (!year && !make && !model) {
+            resultsDiv.innerHTML = '<div class="vin-error">Could not decode this VIN. Please check and try again.</div>';
+            return;
+        }
+
+        let html = '';
+        html += '<div class="vin-hero"><h2>' + [year, make, model].filter(Boolean).join(' ') + '</h2>';
+        if (trim) html += '<p>' + trim + '</p>';
+        html += '</div><div class="vin-results">';
+
+        // Vehicle Info
+        html += '<div class="vin-card"><h3>Vehicle Info</h3>';
+        [['Year',year],['Make',make],['Model',model],['Trim',trim],['Body Class',get('Body Class')],['Vehicle Type',get('Vehicle Type')],['Doors',get('Doors')],['Series',get('Series')]].forEach(([l,v])=>{if(v)html+='<div class="vin-field"><span class="vin-label">'+l+'</span><span class="vin-value">'+v+'</span></div>';});
+        html += '</div>';
+
+        // Engine
+        html += '<div class="vin-card"><h3>Engine & Drivetrain</h3>';
+        [['Engine Size',get('Displacement (L)')?get('Displacement (L)')+'L':''],['Cylinders',get('Engine Number of Cylinders')],['Fuel Type',get('Fuel Type - Primary')],['Horsepower',get('Engine Brake (hp) From')?get('Engine Brake (hp) From')+' hp':''],['Drive Type',get('Drive Type')],['Transmission',get('Transmission Style')],['Speeds',get('Transmission Speeds')]].forEach(([l,v])=>{if(v)html+='<div class="vin-field"><span class="vin-label">'+l+'</span><span class="vin-value">'+v+'</span></div>';});
+        html += '</div>';
+
+        // Manufacturing
+        html += '<div class="vin-card"><h3>Manufacturing</h3>';
+        [['Manufacturer',get('Manufacturer Name')],['Plant City',get('Plant City')],['Plant State',get('Plant State')],['Plant Country',get('Plant Country')],['Origin',get('Country of Origin (DOT)')||get('Manufacturer Country')]].forEach(([l,v])=>{if(v)html+='<div class="vin-field"><span class="vin-label">'+l+'</span><span class="vin-value">'+v+'</span></div>';});
+        html += '</div>';
+
+        // Dimensions
+        html += '<div class="vin-card"><h3>Dimensions & Safety</h3>';
+        [['GVWR',get('Gross Vehicle Weight Rating From')],['Curb Weight',get('Curb Weight (lbs)')?get('Curb Weight (lbs)')+' lbs':''],['Seat Rows',get('Number of Seat Rows')],['Seats',get('Number of Seats')],['Wheel Base',get('Wheel Base (inches) From')?get('Wheel Base (inches) From')+' in':'']].forEach(([l,v])=>{if(v)html+='<div class="vin-field"><span class="vin-label">'+l+'</span><span class="vin-value">'+v+'</span></div>';});
+        html += '</div>';
+
+        // ADAS & Windshield Features card
+        const adasFields = [
+            ['Forward Collision Warning', get('Forward Collision Warning (FCW)')],
+            ['Crash Imminent Braking', get('Crash Imminent Braking (CIB)')],
+            ['Adaptive Cruise Control', get('Adaptive Cruise Control (ACC)')],
+            ['Lane Departure Warning', get('Lane Departure Warning (LDW)')],
+            ['Lane Keeping Assist', get('Lane Keeping Assistance (LKA)')],
+            ['Pedestrian Auto Braking', get('Pedestrian Automatic Emergency Braking (PAEB)')],
+            ['Blind Spot Warning', get('Blind Spot Warning (BSW)')],
+            ['Blind Spot Intervention', get('Blind Spot Intervention (BSI)')],
+            ['Backup Camera', get('Backup Camera')],
+            ['Rear Cross Traffic Alert', get('Rear Cross Traffic Alert')],
+            ['Rear Auto Emergency Braking', get('Rear Automatic Emergency Braking')],
+            ['Dynamic Brake Support', get('Dynamic Brake Support (DBS)')],
+            ['Adaptive Driving Beam', get('Adaptive Driving Beam (ADB)')],
+            ['Auto Headlamp Beam Switch', get('Semiautomatic Headlamp Beam Switching')],
+            ['Daytime Running Lights', get('Daytime Running Light (DRL)')],
+            ['Crash Notification', get('Automatic Crash Notification (ACN) / Advanced Automatic Crash Notification (AACN)')]
+        ];
+        const adasFilled = adasFields.filter(([l,v]) => v);
+        if (adasFilled.length > 0) {
+            html += '<div class="vin-card" style="grid-column: 1 / -1;"><h3 style="color:#e67e22;">ADAS & Windshield Features</h3>';
+            html += '<p style="font-size:12px;color:#95a5a6;margin:-8px 0 12px;">Features that may require windshield calibration after replacement</p>';
+            html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px 24px;">';
+            adasFilled.forEach(([l,v]) => {
+                const icon = v === 'Standard' ? '\u2705' : v === 'Optional' ? '\u25CB' : '\u2022';
+                html += '<div class="vin-field"><span class="vin-label">' + l + '</span><span class="vin-value">' + icon + ' ' + v + '</span></div>';
+            });
+            html += '</div></div>';
+        }
+
+        // Safety Equipment card
+        const safetyFields = [
+            ['Front Air Bags', get('Front Air Bag Locations')],
+            ['Side Air Bags', get('Side Air Bag Locations')],
+            ['Curtain Air Bags', get('Curtain Air Bag Locations')],
+            ['Knee Air Bags', get('Knee Air Bag Locations')],
+            ['Seat Cushion Air Bags', get('Seat Cushion Air Bag Locations')],
+            ['Seat Belts', get('Seat Belt Type')],
+            ['ABS', get('Anti-lock Braking System (ABS)')],
+            ['Stability Control', get('Electronic Stability Control (ESC)')],
+            ['Traction Control', get('Traction Control')],
+            ['TPMS', get('Tire Pressure Monitoring System (TPMS) Type')],
+            ['Auto-Reverse Windows', get('Auto-Reverse System for Windows and Sunroofs')],
+            ['Entertainment', get('Entertainment System')]
+        ];
+        const safetyFilled = safetyFields.filter(([l,v]) => v);
+        if (safetyFilled.length > 0) {
+            html += '<div class="vin-card" style="grid-column: 1 / -1;"><h3>Safety & Equipment</h3>';
+            html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px 24px;">';
+            safetyFilled.forEach(([l,v]) => {
+                html += '<div class="vin-field"><span class="vin-label">' + l + '</span><span class="vin-value">' + v + '</span></div>';
+            });
+            html += '</div></div>';
+        }
+
+        html += '</div>';
+        resultsDiv.innerHTML = html;
+    } catch (err) {
+        resultsDiv.innerHTML = '<div class="vin-error">Failed to decode VIN: ' + err.message + '</div>';
+    }
+}
+
+function clearVIN() {
+    document.getElementById('vinInput').value = '';
+    document.getElementById('vinResults').innerHTML = '<div style="text-align:center;padding:60px 20px;color:#95a5a6;"><div style="font-size:48px;margin-bottom:16px;">&#x1F50D;</div><h3 style="margin:0 0 8px;color:#7f8c8d;">Enter a VIN to decode</h3><p style="margin:0;font-size:14px;">Paste or type a 17-character Vehicle Identification Number above</p></div>';
+}
+
+document.getElementById('vinInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') decodeVIN(); });
+
+
+initSupabase();
+checkAuth();
+
+
+    // Glass Parts Lookup - Options mapping
+    const glassOptions = {
+      2: [{label:'Front Left (Driver)',val:1},{label:'Front Right (Passenger)',val:2},{label:'Rear Left',val:3},{label:'Rear Right',val:4}],
+      6: [{label:'Rear Left (Car/SUV/Truck)',val:1},{label:'Rear Right (Car/SUV/Truck)',val:2},{label:'Left (Van)',val:3},{label:'Right (Van)',val:4}],
+      7: [{label:'Front Left',val:1},{label:'Front Right',val:2}],
+      8: [{label:'1-Piece (Car/SUV/Truck)',val:1},{label:'Rear Left (Van)',val:2},{label:'Rear Right (Van)',val:3}]
+    };
+    let selectedGlass = null;
+    let selectedGlassOpt = null;
+
+    // Glass type button click handlers
+    document.querySelectorAll('.glass-type-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.glass-type-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedGlass = parseInt(this.dataset.glass);
+        selectedGlassOpt = null;
+        const optSel = document.getElementById('glass-option-selector');
+        const optSelect = document.getElementById('glass-option-select');
+        const lookupBtn = document.getElementById('glass-lookup-btn');
+        if (glassOptions[selectedGlass]) {
+          optSelect.innerHTML = '<option value="">-- Select Position --</option>';
+          glassOptions[selectedGlass].forEach(o => {
+            optSelect.innerHTML += '<option value="' + o.val + '">' + o.label + '</option>';
+          });
+          optSel.classList.add('visible');
+          lookupBtn.disabled = true;
+          lookupBtn.textContent = 'Select Position First';
+        } else {
+          optSel.classList.remove('visible');
+          lookupBtn.disabled = false;
+          lookupBtn.textContent = 'Look Up ' + this.dataset.name + ' Parts';
+        }
+        document.getElementById('glass-parts-results').classList.remove('visible');
+      });
+    });
+
+    // Glass option change handler
+    document.getElementById('glass-option-select').addEventListener('change', function() {
+      const lookupBtn = document.getElementById('glass-lookup-btn');
+      if (this.value) {
+        selectedGlassOpt = parseInt(this.value);
+        const selBtn = document.querySelector('.glass-type-btn.selected');
+        lookupBtn.disabled = false;
+        lookupBtn.textContent = 'Look Up ' + (selBtn ? selBtn.dataset.name : '') + ' Parts';
+      } else {
+        selectedGlassOpt = null;
+        lookupBtn.disabled = true;
+        lookupBtn.textContent = 'Select Position First';
+      }
+    });
+
+    // Lookup button handler
+    document.getElementById('glass-lookup-btn').addEventListener('click', async function() {
+      if (!selectedGlass) return;
+      const resultsDiv = document.getElementById('glass-parts-results');
+      resultsDiv.classList.add('visible');
+      resultsDiv.innerHTML = '<div class="glass-loading">Looking up parts...</div>';
+      try {
+        const vinVal = document.getElementById('vinInput').value.trim();
+        const params = { p_vin: vinVal, p_glass: selectedGlass };
+        if (selectedGlassOpt !== null) params.p_glassopt = selectedGlassOpt;
+        const resp = await db.rpc('agcrm_decode_vin', params);
+        if (resp.error) throw new Error(resp.error.message);
+        const data = resp.data;
+        if (!data || !data.parts || Object.keys(data.parts).length === 0) {
+          if (data && data.api_status) {
+            resultsDiv.innerHTML = '<div class="glass-empty">No parts found. The API returned status ' + data.api_status + '. This may be due to test account limitations - production credentials needed.</div>';
+          } else {
+            resultsDiv.innerHTML = '<div class="glass-empty">No parts found for this vehicle and glass type.</div>';
+          }
+          return;
+        }
+        displayGlassParts(data.parts, resultsDiv);
+      } catch(err) {
+        resultsDiv.innerHTML = '<div class="glass-error">Error: ' + err.message + '</div>';
+      }
+    });
+
+    function displayGlassParts(parts, container) {
+      let html = '';
+      const partEntries = typeof parts === 'object' && !Array.isArray(parts) ? Object.values(parts) : parts;
+      partEntries.forEach(part => {
+        const nags = part.part_number || part.id || 'N/A';
+        const price = part.price ? '$' + parseFloat(part.price).toFixed(2) : '';
+        const desc = part.description || '';
+        const hours = part.hours ? part.hours + ' hrs' : '';
+        let featuresHtml = '';
+        if (part.features) {
+          const featureNames = {ldws:'LDWS',rs:'Rain Sensor',hud:'HUD',heated:'Heated',acoustic:'Acoustic'};
+          Object.entries(featureNames).forEach(([key,label]) => {
+            if (part.features[key]) {
+              const isActive = part.features[key] === 'Y' || part.features[key] === 'Yes' || part.features[key] === '1';
+              featuresHtml += '<span class="part-feature-badge ' + (isActive ? 'active' : 'inactive') + '">' + label + (isActive ? ' Yes' : ' No') + '</span>';
+            }
+          });
+        }
+        let invHtml = '';
+        if (window.inventoryData && nags !== 'N/A') {
+          const found = window.inventoryData.find(i => i.nags && i.nags.replace(/[^A-Z0-9]/g,'').includes(nags.replace(/[^A-Z0-9]/g,'')));
+          if (found) {
+            const qty = parseInt(found.qty) || 0;
+            invHtml = '<span class="part-inv-badge ' + (qty > 0 ? 'in-stock' : 'out-of-stock') + '">Inventory: ' + (qty > 0 ? qty + ' in stock' : 'Out of stock') + (found.rack ? ' | Rack ' + found.rack : '') + (found.bin ? '-' + found.bin : '') + '</span>';
+          } else {
+            invHtml = '<span class="part-inv-badge out-of-stock">Not in inventory</span>';
+          }
+        }
+        html += '<div class="part-card"><div class="part-card-header"><span class="part-nags">' + nags + '</span><span class="part-price">' + price + '</span></div>';
+        if (desc) html += '<div class="part-desc">' + desc + (hours ? ' | ' + hours : '') + '</div>';
+        if (featuresHtml) html += '<div class="part-features">' + featuresHtml + '</div>';
+        if (invHtml) html += '<div>' + invHtml + '</div>';
+        html += '</div>';
+      });
+      container.innerHTML = html || '<div class="glass-empty">No parts data available.</div>';
+    }
+
+    // Show glass lookup section when VIN results are displayed
+    const vinResultsObserver = new MutationObserver(function() {
+      const vinResultsEl = document.getElementById('vinResults');
+      const glassSection = document.getElementById('glass-lookup-section');
+      if (vinResultsEl && glassSection) {
+        if (vinResultsEl.innerHTML.trim().length > 0 && !vinResultsEl.textContent.includes('Enter a VIN')) {
+          glassSection.classList.add('visible');
+        } else {
+          glassSection.classList.remove('visible');
+          // Reset glass selection
+          document.querySelectorAll('.glass-type-btn').forEach(b => b.classList.remove('selected'));
+          document.getElementById('glass-option-selector').classList.remove('visible');
+          document.getElementById('glass-parts-results').classList.remove('visible');
+          document.getElementById('glass-lookup-btn').disabled = true;
+          document.getElementById('glass-lookup-btn').textContent = 'Select a Glass Type Above';
+          selectedGlass = null;
+          selectedGlassOpt = null;
+        }
+      }
+    });
+    const vinResultsTarget = document.getElementById('vinResults');
+    if (vinResultsTarget) {
+      vinResultsObserver.observe(vinResultsTarget, { childList: true, subtree: true, characterData: true });
+    }
+
+
+    function downloadSalesCSV() {
+        const table = document.querySelector('#sales table');
+        if (!table) return alert('No sales data to download');
+        const rows = table.querySelectorAll('tr');
+        let csv = '';
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('th, td');
+            const rowData = [];
+            cells.forEach(cell => {
+                let text = cell.textContent.trim().replace(/"/g, '""');
+                rowData.push('"' + text + '"');
+            });
+            csv += rowData.join(',') + '\n';
+        });
+        const blob = new Blob([csv], {type: 'text/csv'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const today = new Date().toISOString().split('T')[0];
+        a.download = 'atlas-sales-' + today + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+</script>
+
+
+
+</body></html>
